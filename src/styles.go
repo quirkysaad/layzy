@@ -9,22 +9,21 @@ var (
 			MarginTop(1).MarginBottom(1).
 			Border(lipgloss.RoundedBorder())
 
-	listPaneStyle = lipgloss.NewStyle().
-			Width(30).Height(10).
+	spacesPaneStyle = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#7D56F4")).
 			Padding(1)
 
 	detailPaneStyle = lipgloss.NewStyle().
-			Width(40).Height(10).
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("#00FFFF")).
 			Padding(1)
 
 	modalStyle = lipgloss.NewStyle().
-			BorderStyle(lipgloss.ThickBorder()).
+			Width(80).
+			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("FF0055")).
-			Padding(1)
+			Padding(1, 2)
 
 	selectedItemStyle = lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#00FFFF")).PaddingLeft(1)
 	itemStyle         = lipgloss.NewStyle().Foreground(lipgloss.Color("#CCCCCC")).PaddingLeft(1)
