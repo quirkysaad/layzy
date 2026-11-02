@@ -9,17 +9,14 @@ var (
 			MarginTop(1).MarginBottom(1).
 			Border(lipgloss.RoundedBorder())
 
-	spacesPaneStyle = lipgloss.NewStyle().
+	basePaneStyle = lipgloss.NewStyle().
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#7D56F4")).
+			BorderForeground(lipgloss.Color("#595959")).
 			Padding(1)
 
-	detailPaneStyle = lipgloss.NewStyle().
-			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color("#00FFFF")).
-			Padding(1)
+	focusedPaneStyle = basePaneStyle.BorderForeground(lipgloss.Color("#7756e6"))
 
-	modalStyle = lipgloss.NewStyle().
+	modalStyle = lipgloss.NewStyle().BorderStyle(lipgloss.RoundedBorder()).
 			Width(80).
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color("FF0055")).

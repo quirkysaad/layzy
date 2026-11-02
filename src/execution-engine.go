@@ -53,28 +53,52 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// }
 
 		switch msg.String() {
+		// Select Spaces pane
+		case "1", "left":
+			if m.isTaskPaneFocused {
+				m.isTaskPaneFocused = false
+			}
+		// Select Tasks pane
+		case "2", "right":
+			if !m.isTaskPaneFocused {
+				m.isTaskPaneFocused = true
+			}
+		// Quit Layzy
 		case "ctrl+c", "q":
 			return m, tea.Quit
-			// The "up" and "k" keys move the cursor up
-		case "up", "k":
-			if m.cursors.spaceCursor > 0 {
-				m.cursors.spaceCursor--
+		// The "up" key move the cursor up
+		case "up":
+			if m.isTaskPaneFocused {
+				if m.taskCursor > 0 {
+					m.taskCursor--
+				}
+			} else {
+				if m.spaces.cursor > 0 {
+					m.spaces.cursor--
+				}
 			}
 
-		// The "down" and "j" keys move the cursor down
-		case "down", "j":
-			if m.cursors.spaceCursor < len(m.spaces)-1 {
-				m.cursors.spaceCursor++
+		// The "down" key move the cursor down
+		case "down":
+
+			if m.isTaskPaneFocused {
+				if m.taskCursor < len(m.spaces.list[m.spaces.cursor].tasks)-1 {
+					m.taskCursor++
+				}
+			} else {
+				if m.spaces.cursor < len(m.spaces.list)-1 {
+					m.spaces.cursor++
+				}
 			}
 
 		// The "enter" key and the space bar toggle the selected state
 		// for the item that the cursor is pointing at.
 		case "enter", "space":
-			_, ok := m.selectedSpace[m.cursors.spaceCursor]
+			_, ok := m.selectedSpace[m.spaces.cursor]
 			if ok {
-				delete(m.selectedSpace, m.cursors.spaceCursor)
+				delete(m.selectedSpace, m.spaces.cursor)
 			} else {
-				m.selectedSpace[m.cursors.spaceCursor] = struct{}{}
+				m.selectedSpace[m.spaces.cursor] = struct{}{}
 			}
 
 		// Add new task

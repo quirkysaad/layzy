@@ -9,7 +9,6 @@ import (
 )
 
 func (m model) View() tea.View {
-
 	// Introduce stack interface for smaller terminal size
 	if m.width < 50 || m.height < 12 {
 		return tea.NewView("Terminal window too small. Please resize.")
@@ -22,50 +21,63 @@ func (m model) View() tea.View {
 	paneHeight := m.height - 4
 
 	// Spaces pane
-	var spacesContent strings.Builder
+	var contentString strings.Builder
 
-	spacesContent.WriteString(titleStyle.Render("Spaces"))
-	spacesContent.WriteString("\n\n")
+	contentString.WriteString(titleStyle.Render("Spaces"))
+	contentString.WriteString("\n\n")
 
-	for i, space := range m.spaces {
-		row := fmt.Sprintf("%s", space.name)
-
-		if m.cursors.spaceCursor == i {
-			spacesContent.WriteByte('>')
+	for i, space := range m.spaces.list {
+		if !m.isTaskPaneFocused && m.spaces.cursor == i {
+			contentString.WriteByte('>')
 		} else {
-			spacesContent.WriteByte(' ')
+			contentString.WriteByte(' ')
 		}
-		spacesContent.WriteString(itemStyle.Render(row))
-		spacesContent.WriteByte('\n')
-
+		contentString.WriteString(itemStyle.Render(space.name))
+		contentString.WriteByte('\n')
 	}
 
-	spacesPane := spacesPaneStyle.Width(int(spacesPaneWidth)).Height(int(paneHeight)).Render(spacesContent.String())
+	spacePaneStyle, tasksPaneStyle := basePaneStyle, basePaneStyle
+
+	if !m.isTaskPaneFocused {
+		spacePaneStyle = focusedPaneStyle
+	} else {
+		tasksPaneStyle = focusedPaneStyle
+	}
+
+	spacesPane := spacePaneStyle.Width(int(spacesPaneWidth)).Height(int(paneHeight)).Render(contentString.String())
 
 	// Tasks pane
-	var tasksContent string
-	// if len(m.spaces) > 0 {
-	// 	activeTask := m.spaces[m.cursor]
-	// 	tasksContent = titleStyle.Background(lipgloss.Color("#00FFFF")).Foreground(lipgloss.Color("#000000")).Render("Tasks") + "\n\n"
-	// 	tasksContent += lipgloss.NewStyle().Bold(true).Render(activeTask.title) + "\n\n"
-	// 	tasksContent += lipgloss.NewStyle().Foreground(lipgloss.Color("#AAAAAA")).Render(activeTask.description)
-	// } else {
-	// 	tasksContent = "No tasks available."
-	// }
+	contentString.Reset()
+	contentString.WriteString(titleStyle.Render("Tasks"))
+	contentString.WriteString("\n\n")
 
-	tasksContent = "Yet to be developed"
-	detailPane := detailPaneStyle.Width(int(tasksPaneWidth)).Height(int(paneHeight)).Render(tasksContent)
+	if currentTasks := m.spaces.list[m.spaces.cursor].tasks; len(currentTasks) > 0 {
+		for i, task := range currentTasks {
+			if m.isTaskPaneFocused && m.taskCursor == i {
+				contentString.WriteString("[>]")
+			} else {
+				contentString.WriteString("[ ]")
+			}
+
+			contentString.WriteString(itemStyle.Render(task))
+			contentString.WriteByte('\n')
+		}
+	} else {
+		contentString.WriteString("No tasks available.")
+	}
+
+	tasksPane := tasksPaneStyle.Width(int(tasksPaneWidth)).Height(int(paneHeight)).Render(contentString.String())
 
 	// Combine into final background layout
-	backgroundLayout := lipgloss.JoinHorizontal(lipgloss.Top, spacesPane, detailPane)
-	backgroundLayout += "\n" + helpStyle.Render("space: toggle • n: new task • q: quit • ↑/↓: navigate")
+	backgroundLayout := lipgloss.JoinHorizontal(lipgloss.Top, spacesPane, tasksPane)
+	backgroundLayout += "\n" + helpStyle.Render("1, 2 ,<-, -> : toggle spaces/tasks • N: new task • q: quit • ↑/↓: navigate")
 
 	if m.isAdding {
 		dimmedBG := dimBackground(backgroundLayout)
 		modalHeader := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#FF0055")).Render("Create New Task")
 		modalFooter := helpStyle.Render("enter: save • esc: cancel")
 
-		modalContent := fmt.Sprintf("%s\n\n%s\n\n%s\n\n%s", modalHeader, m.inputs.TextInput.View(), modalFooter)
+		modalContent := fmt.Sprintf("%s\n\n%s\n\n%s\n\n", modalHeader, m.inputs.TextInput.View(), modalFooter)
 		modalBox := modalStyle.Render(modalContent)
 
 		modalW := lipgloss.Width(modalBox)

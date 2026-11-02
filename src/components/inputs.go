@@ -7,7 +7,3 @@ import (
 type Inputs struct {
 	TextInput textinput.Model
 }
-
-func ClearInputs() {
-
-}
