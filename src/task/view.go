@@ -26,7 +26,7 @@ func (m Model) View() tea.View {
 			taskContent.WriteByte('\n')
 		}
 	} else {
-		taskContent.WriteString("No tasks available.")
+		taskContent.WriteString("No tasks available yet.")
 	}
 
 	return tea.NewView(taskContent.String())
