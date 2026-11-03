@@ -70,7 +70,7 @@ func (m model) View() tea.View {
 
 	// Combine into final background layout
 	backgroundLayout := lipgloss.JoinHorizontal(lipgloss.Top, spacesPane, tasksPane)
-	backgroundLayout += "\n" + helpStyle.Render("1, 2 ,<-, -> : toggle spaces/tasks • N: new task • q: quit • ↑/↓: navigate")
+	backgroundLayout += "\n" + helpStyle.Render("1, 2, <-, -> : toggle spaces/tasks • N: new task • q: quit • ↑/↓: navigate")
 
 	if m.isAdding {
 		dimmedBG := dimBackground(backgroundLayout)
