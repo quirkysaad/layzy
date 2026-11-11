@@ -2,9 +2,8 @@ package app
 
 import (
 	"layzy/src/components"
-	"layzy/src/task"
-
 	"layzy/src/space"
+	"layzy/src/task"
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"

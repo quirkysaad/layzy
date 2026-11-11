@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"layzy/src/ui"
+	"log"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -15,21 +16,28 @@ func (m model) View() tea.View {
 	}
 
 	// Background multi pane layout
-	availableWidth := m.Width - 4
+	availableWidth := m.Width
 	spacesPaneWidth := (availableWidth * 3) / 10
 	tasksPaneWidth := (availableWidth * 7) / 10
-	paneHeight := m.Height - 4
+	paneHeight := m.Height
 
 	spacesContent := m.Model.View()
 	tasksContent := m.Spaces[m.SpaceCursor].View()
 
-	spacesPaneStyle := ui.PaneStyle(true)
-	tasksPaneStyle := ui.PaneStyle(false)
+	spacesPaneStyle := ui.PaneStyle(m.Focus == FocusSpaces)
+	tasksPaneStyle := ui.PaneStyle(m.Focus == FocusTasks)
 
 	spacesPane := spacesPaneStyle.Width(int(spacesPaneWidth)).Height(int(paneHeight)).Render(spacesContent.Content)
 	tasksPane := tasksPaneStyle.Width(int(tasksPaneWidth)).Height(int(paneHeight)).Render(tasksContent.Content)
 
 	finalRender := lipgloss.JoinHorizontal(lipgloss.Top, spacesPane, tasksPane)
+
+	if m.IsAdding {
+		log.Printf("Adding New Task")
+		m.overlayModal(finalRender)
+
+		return tea.NewView(m.overlayModal(finalRender))
+	}
 
 	// if m.IsAdding {
 	// 	dimmedBG := ui.DimBackground(backgroundLayout)
